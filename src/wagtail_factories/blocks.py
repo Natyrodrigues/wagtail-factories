@@ -239,3 +239,22 @@ class DocumentChooserBlockFactory(ChooserBlockFactory):
     @classmethod
     def _create(cls, model_class, document):
         return document
+
+class RichTextBlockFactory(factory.Factory):
+    class Meta:
+        model = str
+
+    text = factory.Faker('sentence')
+
+    @classmethod
+    def _build(cls, model_class, *args, **kwargs):
+        text = kwargs.get('text', None)
+        if text is None:
+            text = cls.text.generate({})
+        # Extrai o parâmetro 'wrapper'; se não informado, usa "p"
+        wrapper = kwargs.get('wrapper', 'p')
+        return f"<{wrapper}>{text}</{wrapper}>"
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        return cls._build(model_class, *args, **kwargs)
